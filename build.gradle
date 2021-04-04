@@ -4,7 +4,7 @@ plugins {
     id 'application'
 }
 
-group 'org.example'
+group 'org.psi'
 version '1.0-SNAPSHOT'
 
 repositories {

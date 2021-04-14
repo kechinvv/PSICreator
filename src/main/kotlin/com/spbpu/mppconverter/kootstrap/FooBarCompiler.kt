@@ -45,6 +45,7 @@ object FooBarCompiler {
         files: Collection<KtFile>,
         cfg: CompilerConfiguration
     ): BindingContext? {
+
         return TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration(
             env.project,
             files,

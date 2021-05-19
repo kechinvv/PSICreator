@@ -87,7 +87,7 @@ object FooBarCompiler {
         val env = KotlinCoreEnvironment.createForProduction(
             disposable,
             cfg,
-            EnvironmentConfigFiles.JVM_CONFIG_FILES
+            EnvironmentConfigFiles.JVM_CONFIG_FILES,
         )
         val project = env.project as MockProject
         class MyPomModelImpl(env: KotlinCoreEnvironment) : PomModelImpl(env.project) {

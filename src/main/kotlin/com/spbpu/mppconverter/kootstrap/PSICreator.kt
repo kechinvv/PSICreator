@@ -13,23 +13,19 @@ import com.intellij.pom.tree.TreeAspect
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.impl.source.tree.TreeCopyHandler
-import com.spbpu.mppconverter.kootstrap.FooBarCompiler.analyzeBunchOfSources
 import com.spbpu.mppconverter.kootstrap.FooBarCompiler.setupMyCfg
 import com.spbpu.mppconverter.kootstrap.FooBarCompiler.setupMyEnv
 import com.spbpu.mppconverter.kootstrap.util.opt
-import org.jetbrains.kotlin.cli.jvm.compiler.*
+import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.config.languageVersionSettings
 import org.jetbrains.kotlin.js.analyze.TopDownAnalyzerFacadeForJS
 import org.jetbrains.kotlin.js.config.JsConfig
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
-import org.jetbrains.kotlin.psi.analysisContext
 import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.diagnostics.BindingContextSuppressCache
 import java.io.File
-
 
 @Suppress("DEPRECATION")
 class PSICreator() {
@@ -46,9 +42,6 @@ class PSICreator() {
             EnvironmentConfigFiles.JVM_CONFIG_FILES
         )
         val project = env.project as MockProject
-        project.registerService(
-            TreeAspect::class.java
-        )
 
         class MyPomModelImpl(env: KotlinCoreEnvironment) : PomModelImpl(env.project) {
             override fun runTransaction(pt: PomTransaction) = pt.run()
@@ -56,10 +49,14 @@ class PSICreator() {
 
 
         val pomModel = MyPomModelImpl(env)
-
         project.registerService(
             PomModel::class.java,
             pomModel
+        )
+        val treeAspect = TreeAspect(pomModel)
+        project.registerService(
+            TreeAspect::class.java,
+            treeAspect
         )
         return env
     }
@@ -128,28 +125,24 @@ class PSICreator() {
                 return targetFiles.first()
             }
         }
-
         return targetFiles.first()
     }
 
 
+    fun getBinding(): BindingContext? {
+        return ctx
+    }
+
     companion object {
-        fun analyze(psiFile: KtFile): BindingContext? {
+        fun analyze(psiFile: PsiFile): BindingContext? {
             val cmd = opt.parse(arrayOf())
             val cfg = setupMyCfg(cmd)
             val env = setupMyEnv(cfg)
             val configuration = env.configuration.copy()
             configuration.put(CommonConfigurationKeys.MODULE_NAME, "root")
-          /**  return TopDownAnalyzerFacadeForJS.analyzeFiles(
+            return TopDownAnalyzerFacadeForJS.analyzeFiles(
                 (listOf(psiFile as KtFile)),
                 JsConfig(env.project, configuration)
-            ).bindingContext **/
-            return TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration(
-                env.project,
-                listOf(psiFile),
-                CliBindingTrace(),
-                cfg,
-                { scope -> JvmPackagePartProvider(env.configuration.languageVersionSettings, scope) }
             ).bindingContext
         }
     }

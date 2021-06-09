@@ -35,8 +35,8 @@ object PathUtilEx {
         if (NO_PATH == path) return arrayListOf()
 
         return path.walkTopDown()
-                .filter { it.isFile && "jar" == it.extension }
-                .filter { it.nameWithoutExtension.endsWith(version) }
-                .toList()
+            .filter { it.isFile && "jar" == it.extension }
+            .filter { it.nameWithoutExtension.endsWith(version) }
+            .toList()
     }
 }

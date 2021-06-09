@@ -84,7 +84,7 @@ class PSICreator() {
         PsiFileFactory.getInstance(proj).createFileFromText(JavaLanguage.INSTANCE, text)
 
 
-    fun getPSIForFile(path: String, generateCtx: Boolean = true): KtFile {
+    fun getPSIForFile(path: String): KtFile {
         val newArgs = arrayOf("-t", path)
 
         val cmd = opt.parse(newArgs)
@@ -112,19 +112,19 @@ class PSICreator() {
 
         configuration.put(CommonConfigurationKeys.MODULE_NAME, "sample")
 
-        if (generateCtx) {
-            try {
-                val tmpCtx =
-                    TopDownAnalyzerFacadeForJS.analyzeFiles(
-                        listOf(file),
-                        JsConfig(env.project, configuration)
-                    ).bindingContext
-                ctx = tmpCtx
-            } catch (e: Throwable) {
-                ctx = null
-                return targetFiles.first()
-            }
+
+        try {
+            val tmpCtx =
+                TopDownAnalyzerFacadeForJS.analyzeFiles(
+                    listOf(file),
+                    JsConfig(env.project, configuration)
+                ).bindingContext
+            ctx = tmpCtx
+        } catch (e: Throwable) {
+            ctx = null
+            return targetFiles.first()
         }
+
         return targetFiles.first()
     }
 

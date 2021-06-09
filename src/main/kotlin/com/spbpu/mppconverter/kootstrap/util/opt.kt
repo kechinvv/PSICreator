@@ -16,33 +16,33 @@ object opt {
     private val parser = DefaultParser()
 
     val targetRoot: Option = Option.builder("t")
-            .longOpt("targetRoot")
-            .required(false)
-            .hasArg()
-            .build()
+        .longOpt("targetRoot")
+        .required(false)
+        .hasArg()
+        .build()
 
     val kotlinRoot: Option = Option.builder("k")
-            .longOpt("kotlinRoot")
-            .required(false)
-            .hasArg()
-            .build()
+        .longOpt("kotlinRoot")
+        .required(false)
+        .hasArg()
+        .build()
 
     val jarFile: Option = Option.builder("j")
-            .longOpt("jarFile")
-            .required(false)
-            .hasArg()
-            .build()
+        .longOpt("jarFile")
+        .required(false)
+        .hasArg()
+        .build()
 
     val pomFile: Option = Option.builder("p")
-            .longOpt("pomFile")
-            .required(false)
-            .hasArg()
-            .build()
+        .longOpt("pomFile")
+        .required(false)
+        .hasArg()
+        .build()
 
     init {
         opt::class.java.declaredFields
-                .filter { Option::class.java == it.type }
-                .forEach { options.addOption(it.get(this) as Option) }
+            .filter { Option::class.java == it.type }
+            .forEach { options.addOption(it.get(this) as Option) }
     }
 
     fun parse(args: Array<String>): CommandLine = parser.parse(options, args)
@@ -51,16 +51,16 @@ object opt {
 
 val CommandLine.targetRoots: List<String>
     get() = this.getOptionValues(opt.targetRoot.opt)?.toList()
-            ?: emptyList()
+        ?: emptyList()
 
 val CommandLine.kotlinRoots: List<String>
     get() = this.getOptionValues(opt.kotlinRoot.opt)?.asList()
-            ?: emptyList()
+        ?: emptyList()
 
 val CommandLine.jarFiles: List<String>
     get() = this.getOptionValues(opt.jarFile.opt)?.asList()
-            ?: emptyList()
+        ?: emptyList()
 
 val CommandLine.pomFile: String
     get() = this.getOptionValue(opt.pomFile.opt)
-            ?: ""
+        ?: ""

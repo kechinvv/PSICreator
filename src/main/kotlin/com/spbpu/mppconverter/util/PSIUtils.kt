@@ -3,7 +3,6 @@ package com.spbpu.mppconverter.util
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
-import java.util.ArrayList
 
 fun PsiElement.getAllChildrenOfCurLevel(): List<PsiElement> = this.node.getAllChildrenOfCurLevel().map { it.psi }
 

@@ -8,10 +8,10 @@ import com.intellij.pom.core.impl.PomModelImpl
 import com.intellij.pom.tree.TreeAspect
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.impl.source.codeStyle.IndentHelper
-import org.apache.commons.cli.CommandLine
 import com.spbpu.mppconverter.kootstrap.idea.MockCodeStyleManager
 import com.spbpu.mppconverter.kootstrap.idea.MockIndentHelper
 import com.spbpu.mppconverter.kootstrap.util.*
+import org.apache.commons.cli.CommandLine
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.config.addKotlinSourceRoots
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -90,6 +90,7 @@ object FooBarCompiler {
             EnvironmentConfigFiles.JVM_CONFIG_FILES,
         )
         val project = env.project as MockProject
+
         class MyPomModelImpl(env: KotlinCoreEnvironment) : PomModelImpl(env.project) {
             override fun runTransaction(pt: PomTransaction) = pt.run()
         }

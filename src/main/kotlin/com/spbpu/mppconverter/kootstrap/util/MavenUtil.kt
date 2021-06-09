@@ -29,10 +29,10 @@ import java.io.File
 
 internal fun newRepositorySystem(): RepositorySystem {
     return MavenRepositorySystemUtils.newServiceLocator()
-            .addService(RepositoryConnectorFactory::class.java, BasicRepositoryConnectorFactory::class.java)
-            .addService(TransporterFactory::class.java, FileTransporterFactory::class.java)
-            .addService(TransporterFactory::class.java, HttpTransporterFactory::class.java)
-            .getService(RepositorySystem::class.java)
+        .addService(RepositoryConnectorFactory::class.java, BasicRepositoryConnectorFactory::class.java)
+        .addService(TransporterFactory::class.java, FileTransporterFactory::class.java)
+        .addService(TransporterFactory::class.java, HttpTransporterFactory::class.java)
+        .getService(RepositorySystem::class.java)
 }
 
 internal fun newSession(system: RepositorySystem): RepositorySystemSession {
@@ -44,43 +44,44 @@ internal fun newSession(system: RepositorySystem): RepositorySystemSession {
 
 internal fun localRepo(): RemoteRepository {
     return RemoteRepository.Builder(
-            "local",
-            "default",
-            "file:" + System.getProperty("user.home") + "/.m2/repository"
+        "local",
+        "default",
+        "file:" + System.getProperty("user.home") + "/.m2/repository"
     ).build()
 }
 
 internal val Dependency.asAether: org.eclipse.aether.graph.Dependency
     get() = org.eclipse.aether.graph.Dependency(
-            org.eclipse.aether.artifact.DefaultArtifact(
-                    this.groupId,
-                    this.artifactId,
-                    this.type,
-                    this.version
-            ),
-            this.scope,
-            this.isOptional
+        org.eclipse.aether.artifact.DefaultArtifact(
+            this.groupId,
+            this.artifactId,
+            this.type,
+            this.version
+        ),
+        this.scope,
+        this.isOptional
     )
 
 fun getPomModel(pom: File): Model {
     val pomReq = DefaultModelBuildingRequest().setPomFile(pom)
     val b = DefaultModelBuilderFactory().newInstance()
     val model = StringSearchModelInterpolator().interpolateModel(
-            b.build(pomReq).rawModel,
-            pom.parentFile,
-            pomReq,
-            object : ModelProblemCollector {
-                override fun add(req: ModelProblemCollectorRequest?) {
-                    // do nothing
-                }
+        b.build(pomReq).rawModel,
+        pom.parentFile,
+        pomReq,
+        object : ModelProblemCollector {
+            override fun add(req: ModelProblemCollectorRequest?) {
+                // do nothing
             }
+        }
     )
     return model
 }
 
 fun setupFromPom(
-        pom: File,
-        cfg: CompilerConfiguration): CompilerConfiguration {
+    pom: File,
+    cfg: CompilerConfiguration
+): CompilerConfiguration {
 
     val model = getPomModel(pom)
 
@@ -91,18 +92,18 @@ fun setupFromPom(
     val localRepo = localRepo()
 
     val collectReq = CollectRequest(
-            model.dependencies.map { it.asAether },
-            null,
-            listOf(localRepo)
+        model.dependencies.map { it.asAether },
+        null,
+        listOf(localRepo)
     )
     val depReq = DependencyRequest(collectReq, null)
 
     val res = repoSystem.resolveDependencies(session, depReq)
 
     res.artifactResults
-            .filter { it.isResolved }
-            .map { it.artifact.file }
-            .forEach { cfg.addJvmClasspathRoot(it) }
+        .filter { it.isResolved }
+        .map { it.artifact.file }
+        .forEach { cfg.addJvmClasspathRoot(it) }
 
     return cfg
 }

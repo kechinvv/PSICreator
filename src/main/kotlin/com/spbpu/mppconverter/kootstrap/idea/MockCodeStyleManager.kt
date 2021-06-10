@@ -22,69 +22,84 @@ class MockCodeStyleManager(private val myProject: Project) : CodeStyleManager() 
     override fun getProject(): Project = myProject
 
     override fun reformat(
-            element: PsiElement): PsiElement = reformat(element, false)
+        element: PsiElement
+    ): PsiElement = reformat(element, false)
 
     override fun reformat(
-            element: PsiElement,
-            canChangeWhiteSpacesOnly: Boolean): PsiElement = element
+        element: PsiElement,
+        canChangeWhiteSpacesOnly: Boolean
+    ): PsiElement = element
 
     override fun reformatRange(
-            element: PsiElement,
-            startOffset: Int,
-            endOffset: Int,
-            canChangeWhiteSpacesOnly: Boolean): PsiElement = element
+        element: PsiElement,
+        startOffset: Int,
+        endOffset: Int,
+        canChangeWhiteSpacesOnly: Boolean
+    ): PsiElement = element
 
     override fun reformatRange(
-            element: PsiElement,
-            startOffset: Int,
-            endOffset: Int): PsiElement = element
+        element: PsiElement,
+        startOffset: Int,
+        endOffset: Int
+    ): PsiElement = element
 
     override fun reformatText(
-            file: PsiFile,
-            startOffset: Int,
-            endOffset: Int) {
+        file: PsiFile,
+        startOffset: Int,
+        endOffset: Int
+    ) {
         reformatText(file, setOf(TextRange(startOffset, endOffset)))
     }
 
     override fun reformatText(
-            file: PsiFile,
-            ranges: Collection<TextRange>) = Unit
+        file: PsiFile,
+        ranges: Collection<TextRange>
+    ) = Unit
 
     override fun reformatTextWithContext(
-            file: PsiFile,
-            ranges: Collection<TextRange>) = Unit
+        file: PsiFile,
+        ranges: Collection<TextRange>
+    ) = Unit
 
     override fun reformatNewlyAddedElement(
-            parent: ASTNode,
-            addedElement: ASTNode) = Unit
+        parent: ASTNode,
+        addedElement: ASTNode
+    ) = Unit
 
     override fun adjustLineIndent(
-            file: PsiFile,
-            offset: Int): Int = offset
+        file: PsiFile,
+        offset: Int
+    ): Int = offset
 
     override fun adjustLineIndent(
-            document: Document,
-            offset: Int): Int = offset
+        document: Document,
+        offset: Int
+    ): Int = offset
 
     override fun adjustLineIndent(
-            file: PsiFile,
-            rangeToAdjust: TextRange) = Unit
+        file: PsiFile,
+        rangeToAdjust: TextRange
+    ) = Unit
 
     override fun getLineIndent(
-            file: PsiFile,
-            offset: Int): String? = ""
+        file: PsiFile,
+        offset: Int
+    ): String? = ""
 
     override fun getLineIndent(
-            document: Document,
-            offset: Int): String? = ""
+        document: Document,
+        offset: Int
+    ): String? = ""
 
     override fun getIndent(
-            text: String,
-            fileType: FileType): Indent = MyIndent()
+        text: String,
+        fileType: FileType
+    ): Indent = MyIndent()
 
     override fun isLineToBeIndented(
-            file: PsiFile,
-            offset: Int): Boolean = false
+        file: PsiFile,
+        offset: Int
+    ): Boolean = false
 
     data class MyIndent(val amount: Int = 0) : Indent {
         override fun isGreaterThan(indent: Indent) = function {
@@ -133,12 +148,15 @@ class MockCodeStyleManager(private val myProject: Project) : CodeStyleManager() 
     override fun isSequentialProcessingAllowed(): Boolean = true
 
     override fun performActionWithFormatterDisabled(
-            r: Runnable) = r.run()
+        r: Runnable
+    ) = r.run()
 
     override fun <T : Throwable> performActionWithFormatterDisabled(
-            r: ThrowableRunnable<T>) = r.run()
+        r: ThrowableRunnable<T>
+    ) = r.run()
 
     override fun <T> performActionWithFormatterDisabled(
-            r: Computable<T>): T = r.compute()
+        r: Computable<T>
+    ): T = r.compute()
 
 }

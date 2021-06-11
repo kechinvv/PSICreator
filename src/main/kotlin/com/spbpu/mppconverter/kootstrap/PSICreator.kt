@@ -154,10 +154,13 @@ class PSICreator() {
             )
         }
 
-        targetFiles = env.getSourceFiles().map {
+        targetFiles = env.getSourceFiles().mapNotNull {
             val f = KtPsiFactory(it).createFile(it.virtualFile.path, it.text)
             f.originalFile = it
-            f
+            val name = f.name
+            if (name.slice(name.length - 3 until name.length) == ".kt")
+                f
+            else null
         }
 
         val configuration = env.configuration.copy()
@@ -173,7 +176,6 @@ class PSICreator() {
                 ).bindingContext
             ctx = tmpCtx
         } catch (e: Throwable) {
-            ctx = null
             return targetFiles
         }
 

@@ -129,9 +129,57 @@ class PSICreator() {
     }
 
 
-    fun getBinding(): BindingContext? {
-        return ctx
+    fun getBinding(path: String): BindingContext? {
+        return if (ctx != null) ctx
+        else {
+            getPSIForProject(path)
+            ctx
+        }
     }
+
+
+    fun getPSIForProject(path: String): List<KtFile> {
+        val newArgs = arrayOf("-t", path)
+
+        val cmd = opt.parse(newArgs)
+
+        cfg = setupMyCfg(cmd)
+        env = setupMyEnv(cfg)
+
+        if (!Extensions.getRootArea().hasExtensionPoint(TreeCopyHandler.EP_NAME.name)) {
+            Extensions.getRootArea().registerExtensionPoint(
+                TreeCopyHandler.EP_NAME.name,
+                TreeCopyHandler::class.java.canonicalName,
+                ExtensionPoint.Kind.INTERFACE
+            )
+        }
+
+        targetFiles = env.getSourceFiles().map {
+            val f = KtPsiFactory(it).createFile(it.virtualFile.path, it.text)
+            f.originalFile = it
+            f
+        }
+
+        val configuration = env.configuration.copy()
+
+        configuration.put(CommonConfigurationKeys.MODULE_NAME, "sample")
+
+
+        try {
+            val tmpCtx =
+                TopDownAnalyzerFacadeForJS.analyzeFiles(
+                    targetFiles,
+                    JsConfig(env.project, configuration)
+                ).bindingContext
+            ctx = tmpCtx
+        } catch (e: Throwable) {
+            ctx = null
+            return targetFiles
+        }
+
+        return targetFiles
+    }
+
 
     companion object {
         fun analyze(psiFile: PsiFile): BindingContext? {

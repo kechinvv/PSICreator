@@ -129,16 +129,7 @@ class PSICreator() {
     }
 
 
-    fun getBinding(path: String): BindingContext? {
-        return if (ctx != null) ctx
-        else {
-            getPSIForProject(path)
-            ctx
-        }
-    }
-
-
-    fun getPSIForProject(path: String): List<KtFile> {
+    fun getPSIForProject(path: String): Pair<List<KtFile>, BindingContext?> {
         val newArgs = arrayOf("-t", path)
 
         val cmd = opt.parse(newArgs)
@@ -167,7 +158,6 @@ class PSICreator() {
 
         configuration.put(CommonConfigurationKeys.MODULE_NAME, "sample")
 
-
         try {
             val tmpCtx =
                 TopDownAnalyzerFacadeForJS.analyzeFiles(
@@ -176,10 +166,11 @@ class PSICreator() {
                 ).bindingContext
             ctx = tmpCtx
         } catch (e: Throwable) {
-            return targetFiles
+            //println(e)
+            ctx = null
         }
 
-        return targetFiles
+        return Pair(targetFiles, ctx)
     }
 
 
